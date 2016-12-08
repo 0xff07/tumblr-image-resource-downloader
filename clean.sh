@@ -1,7 +1,4 @@
 #! /bin/bash
+rm *.png
 rm *.jpg
 rm *.gif
-rm *.png
-rm *.html
-rm *.part
-rm *.mp4

@@ -1,6 +1,6 @@
-line = "http://schoolgirl2015.tumblr.com/archive";
+line = "http://killerhan.tumblr.com/archive";
 
-YEAR_MIN = 2015;
+YEAR_MIN = 2016;
 YEAR_MAX = 2016;
 
 debug = 0;

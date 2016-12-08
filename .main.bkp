@@ -1,4 +1,4 @@
-line = "http://network567432.tumblr.com/archive";
+line = "http://hornyforsex.tumblr.com/archive";
 YEAR_MIN = 2016;
 YEAR_MAX = 2016;
 
@@ -10,11 +10,6 @@ host = line.replace(/\/archive.*/, "");
 dir = host.replace(/https?:\/\//, "");
 fs = require('fs');
 fs.mkdirSync(dir);
-fs.writeFileSync(dir + "/" + ".page_link.txt",dir + "\n", {flag:'a+'});
-fs.writeFileSync(".page_link.txt",dir +  "\n", {flag:'a+'});
-fs.writeFileSync(dir + "/" + ".photo_link.txt",dir + "\n", {flag:'a+'});
-fs.writeFileSync(".photo_link.txt",dir + "\n", {flag:'a+'});
-
 
 var reg_tumblr_image=/(https?:\/\/68\.media\.tumblr\.com\/\S+_1280\.jpg)/g;
 var reg_tumblr_image=/(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?\.jpg)/g;
@@ -51,6 +46,7 @@ function getObjectLink(URL, format, callback, debug){
   		}else{
   			for(var i = 0; i < res.length; i++){
   				res[i] = res[i].replace(format, "$1");
+  				//console.log(res[i]);
   			}
   		}
   	}
@@ -131,6 +127,7 @@ function scrollDownToFindLink(URL, host, format, callback, debug){
         next = b.match(reg_next);
         for(var i = 0; i < next.length; i++){
           next[0] = next[0].replace(reg_next, "$1");
+          //console.log(host + next[0]);
           scrollDownToFindLink(host + next[0], host, format, callback, debug);
         }
     }
@@ -147,6 +144,7 @@ function scrollDownToFindLink(URL, host, format, callback, debug){
       }
     }
 
+    /* Keep scrolling down */
   }
 
   request.get(URL,  _parseLink);
@@ -163,6 +161,7 @@ for(var year = YEAR_MAX;year >= YEAR_MIN; year--){
   for(var month = 12; month >= 1; month--){
     for(var i = 0; i < reg_tumblr_page.length; i++){
       src = line + "\/" + year + "\/" + month;
+      //console.log(src);
       scrollDownToFindLink(
         src,
         host,
