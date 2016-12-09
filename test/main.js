@@ -1,4 +1,4 @@
-line = "http://fuck-me-with-your-tongue.tumblr.com/archive";
+line = "http://minicooper0316.tumblr.com/archive";
 YEAR_MIN = 2016;
 YEAR_MAX = 2016;
 
@@ -10,16 +10,17 @@ host = line.replace(/\/archive.*/, "");
 dir = host.replace(/https?:\/\//, "");
 fs = require('fs');
 if(!fs.existsSync(dir))fs.mkdirSync(dir);
-fs.writeFileSync(dir + "/" + ".page_link.tmp",dir + "\n", {flag:'w+'});
-fs.writeFileSync(".page_link.tmp",dir +  "\n", {flag:'w+'});
-fs.writeFileSync(dir + "/" + ".photo_link.tmp",dir + "\n", {flag:'w+'});
-fs.writeFileSync(".photo_link.tmp",dir + "\n", {flag:'w+'});
+fs.writeFileSync(dir + "/" + ".page_link.txt",dir + "\n", {flag:'w+'});
+fs.writeFileSync(".page_link.txt",dir +  "\n", {flag:'w+'});
+fs.writeFileSync(dir + "/" + ".photo_link.txt",dir + "\n", {flag:'w+'});
+fs.writeFileSync(".photo_link.txt",dir + "\n", {flag:'w+'});
 
 
 var reg_tumblr_image=/(https?:\/\/68\.media\.tumblr\.com\/\S+_1280\.jpg)/g;
+var reg_tumblr_img = /<img.*src="(\S+)"\s+.*/;
 var reg_tumblr_image=/(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?\.jpg)/g;
 var reg_tumblr_gif = /(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\.gif)/g;
-var reg_tumblr_png = /(https?:\/\/68\.media\.tumblr\.com\/\S+_1280\.png)/g;
+var reg_tumblr_png = /(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?\.png)/g;
 var reg_tumblr_page =
 [ /<a target="_blank" class="hover" title.+href="(\S*)"/g,
   /<a target="_blank" class="hover" title href="(\S*)"/g ];
@@ -95,7 +96,7 @@ function downloadObject(graphurl){
 function grepLivingObject(line, reg, debug){
 	fs = require('fs');
   	getObjectLink(line, reg, function(link){
-      if(!link.match(/.*_1280\.jpg.*/g)){
+      if(!link.match(/.*_1280\.\S\S\S.*/g)){
         var resol = /\S+_(\d\d\d)\S+/g;
         var tmp = resol.exec(link);
         if(tmp){
@@ -104,8 +105,8 @@ function grepLivingObject(line, reg, debug){
         }
       }
 	  console.log(link);
-	  fs.writeFileSync(dir + "/" + ".photo_link.tmp",link + "\n", {flag:'a+'});
-	  fs.writeFileSync(".photo_link.tmp",link + "\n", {flag:'a+'});
+	  fs.writeFileSync(dir + "/" + ".photo_link.txt",link + "\n", {flag:'a+'});
+	  fs.writeFileSync(".photo_link.txt",link + "\n", {flag:'a+'});
 	  if(download)
 		downloadObject(link);
     }, debug);
@@ -159,8 +160,8 @@ function scrollDownToFindLink(URL, host, format, callback, debug){
 
 
 /* main */
-for(var year = YEAR_MAX;year >= YEAR_MIN; year--){
-  for(var month = 12; month >= 1; month--){
+for(var year = 2016;year >= 2016; year--){
+  for(var month = 11; month >= 11; month--){
     for(var i = 0; i < reg_tumblr_page.length; i++){
       src = line + "\/" + year + "\/" + month;
       scrollDownToFindLink(
@@ -169,8 +170,8 @@ for(var year = YEAR_MAX;year >= YEAR_MIN; year--){
         reg_tumblr_page[i],
         function(link){
 			console.log(link);
-			fs.writeFileSync(dir + "/" + ".page_link.tmp",link + "\n", {flag:'a+'});
-			fs.writeFileSync(".page_link.tmp",link + "\n", {flag:'a+'});
+			fs.writeFileSync(dir + "/" + ".page_link.txt",link + "\n", {flag:'a+'});
+			fs.writeFileSync(".page_link.txt",link + "\n", {flag:'a+'});
 			grepLivingObject(link, reg_tumblr_image, debug);
 			grepLivingObject(link, reg_tumblr_gif, debug);
 			grepLivingObject(link, reg_tumblr_png, debug);
