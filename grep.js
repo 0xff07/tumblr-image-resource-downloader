@@ -1,6 +1,6 @@
 
 /********** set here ********/
-var line = "http://minicooper0316.tumblr.com/archive";
+var line = "http://wanimal1983.org/archive";
 SET_FILT = 1;
 
 
@@ -26,6 +26,7 @@ var reg_next = /<a id="next_page_link" href="(\S+)">.+/g;
 function cat(URL, callback)
 {
 	var request = require('request')
+	URL = encodeURI(URL);
 	request.get(URL, function(e, r, b){
 		if(callback)
 			callback(b);
