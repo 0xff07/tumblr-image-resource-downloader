@@ -1,11 +1,10 @@
 /********** set here ********/
-var line = "http://minicooper0316.tumblr.com/archive";
 SET_FILT = 1;
 
 /* regullar expressions for parsing */
 var reg_tumblr_image=/(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?\.jpg)/g;
-var reg_tumblr_gif = /(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\.gif)/g;
-var reg_tumblr_png = /(https?:\/\/68\.media\.tumblr\.com\/\S+_1280.png)/g;
+var reg_tumblr_gif = /(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?\.gif)/g;
+var reg_tumblr_png = /(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?.png)/g;
 var reg_tumblr_page =
 [ /<a target="_blank" class="hover" title.+href="(\S*)"/g,
   /<a target="_blank" class="hover" title href="(\S*)"/g ];
@@ -16,7 +15,8 @@ function cat(URL, callback)
 {
 	var request = require('request')
 	URL = encodeURI(URL);
-	request.get(URL, function(e, r, b){
+
+	request({url:URL, method:'GET'}, function(e, r, b){
 		if(callback)
 			callback(b);
 	})
@@ -36,20 +36,6 @@ function grep(source, format, callback){
 	}
 }
 
-/* main */
-
-/* create folder for images and videos */
-host = line.replace(/\/archive.*/, "");
-dir = host.replace(/https?:\/\//, "");
-console.log(dir);
-fs = require('fs');
-if(!fs.existsSync(dir))
-	fs.mkdirSync(dir)
-	
-fs.writeFileSync(dir + "/" + ".page_link.txt",dir + "\n", {flag:'w+'});
-fs.writeFileSync(".page_link.txt",dir +  "\n", {flag:'w+'});
-fs.writeFileSync(dir + "/" + ".photo_link.txt",dir + "\n", {flag:'w+'});
-fs.writeFileSync(".photo_link.txt",dir + "\n", {flag:'w+'});
 
 
 /*
@@ -68,7 +54,6 @@ function scroll(src){
 			console.log(link);	
 			fs.writeFileSync(".page_link.txt",encodeURI(link) +  "\n", {flag:'a+'});
 			fs.writeFileSync(dir + "/" + ".page_link.txt",link + "\n", {flag:'a+'});
-			link = encodeURI(link);
 			cat(link, function(content){
 				grep(content, reg_tumblr_image, function(link){
 					if(!link.match(/.*_1280\.\S\S\S.*/g) & SET_FILT){
@@ -83,11 +68,22 @@ function scroll(src){
 					fs.writeFileSync(".photo_link.txt",link + "\n", {flag:'a+'});
 				})
 				grep(content, reg_tumblr_gif, function(link){
+					var avatar = /.*avatar.*/g;
+					if(avatar.test(link))
+						return;
 					console.log(link);
 					fs.writeFileSync(dir + "/" + ".photo_link.txt",link + "\n", {flag:'a+'});
 					fs.writeFileSync(".photo_link.txt",link + "\n", {flag:'a+'});
 				})
 				grep(content, reg_tumblr_png, function(link){
+					if(!link.match(/.*_1280\.\S\S\S.*/g) & SET_FILT){
+						var resol = /\S+_(\d\d\d)\S+/g;
+						var tmp = resol.exec(link);
+						if(tmp){
+							tmp = tmp[1];
+							link = link.replace(tmp, "1280");
+						}
+					}
 					var avatar = /.*avatar.*/g;
 					if(avatar.test(link))
 						return;
@@ -105,10 +101,28 @@ function scroll(src){
 }
 
 /* the only code that will be executed for parsing is this */
-scroll(line);
+
+const readline = require('readline');
+
+const rl = readline.createInterface({
+	  input: process.stdin,
+	  output: process.stdout
+});
+
+rl.question('', (line) => {
+	host = line.replace(/\/archive.*/, "");
+	dir = host.replace(/https?:\/\//, "");
+	console.log(dir);
+	fs = require('fs');
+	if(!fs.existsSync(dir))
+		fs.mkdirSync(dir)
+	
+	fs.writeFileSync(dir + "/" + ".page_link.txt",dir + "\n", {flag:'w+'});
+	fs.writeFileSync(".page_link.txt",dir +  "\n", {flag:'w+'});
+	fs.writeFileSync(dir + "/" + ".photo_link.txt",dir + "\n", {flag:'w+'});
+	fs.writeFileSync(".photo_link.txt",dir + "\n", {flag:'w+'});
+	scroll(line);
+	rl.close();
+});
 
 
-/* fun fact */
-//src = "http://tjdvlf3820.tumblr.com/post/154211623748/1234567890-111-자-방금-들어온-따듯한-제보입니다-행님들-나이미상"
-//cat("src", console.log) 會出現error page
-//cat(encodeURI(src), console.log);
