@@ -7,7 +7,7 @@ echo $firstline
 while read line; do
 	echo $line >> vid-list.txt
 	youtube-dl -w $line -o $firstline/'%(url)s.%(ext)s' &
-	for((i=0;i<4;i++));do
+	for((i=0;i<9;i++));do
 		read -r line
 		echo $line >> vid-list.txt
 		youtube-dl -w $line -o $firstline/'%(url)s.%(ext)s' &

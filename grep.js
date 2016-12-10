@@ -1,26 +1,15 @@
-
 /********** set here ********/
-var line = "http://wanimal1983.org/archive";
+var line = "http://sneezing1.tumblr.com/archive";
 SET_FILT = 1;
-
 
 /* regullar expressions for parsing */
 var reg_tumblr_image=/(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\d?\.jpg)/g;
 var reg_tumblr_gif = /(https?:\/\/68\.media\.tumblr\.com\/\S+_\d\d\d\.gif)/g;
 var reg_tumblr_png = /(https?:\/\/68\.media\.tumblr\.com\/\S+_1280.png)/g;
-
-var reget = 
-[   reg_tumblr_image, 
-	reg_tumblr_gif, 
-	reg_tumblr_png	];
-
 var reg_tumblr_page =
 [ /<a target="_blank" class="hover" title.+href="(\S*)"/g,
   /<a target="_blank" class="hover" title href="(\S*)"/g ];
-
 var reg_next = /<a id="next_page_link" href="(\S+)">.+/g;
-
-
 
 /* functions. view them as library */
 function cat(URL, callback)
@@ -32,7 +21,6 @@ function cat(URL, callback)
 			callback(b);
 	})
 }
-
 
 function grep(source, format, callback){
 	if(!source){
@@ -48,13 +36,10 @@ function grep(source, format, callback){
 	}
 }
 
-
-
 /* main */
 
 /* create folder for images and videos */
 host = line.replace(/\/archive.*/, "");
-
 dir = host.replace(/https?:\/\//, "");
 console.log(dir);
 fs = require('fs');
@@ -73,7 +58,7 @@ fs.writeFileSync(".photo_link.txt",dir + "\n", {flag:'w+'});
    2. grep post links(and save it to .page_link.txt)
    3. cat the content of post
    4. grep image link
-   5. print the link(you can write or redirect to other file.)
+   5. grep photo links and write to .photo_link.txt
    6. send request to get more content(i.e. to scroll down), and go to 1.
 */
 
@@ -81,7 +66,7 @@ function scroll(src){
 	cat(src, function(content){
 		grep(content,reg_tumblr_page[0], function(link){
 			console.log(link);	
-			fs.writeFileSync(".page_link.txt",link +  "\n", {flag:'a+'});
+			fs.writeFileSync(".page_link.txt",encodeURI(link) +  "\n", {flag:'a+'});
 			fs.writeFileSync(dir + "/" + ".page_link.txt",link + "\n", {flag:'a+'});
 			link = encodeURI(link);
 			cat(link, function(content){
@@ -96,7 +81,6 @@ function scroll(src){
 					}
 					fs.writeFileSync(dir + "/" + ".photo_link.txt",link + "\n", {flag:'a+'});
 					fs.writeFileSync(".photo_link.txt",link + "\n", {flag:'a+'});
-
 				})
 				grep(content, reg_tumblr_gif, function(link){
 					console.log(link);
