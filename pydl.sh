@@ -1,19 +1,19 @@
 #! /bin/bash
 echo "sending requests..."
 
-read -r firstline<.page_link.txt
+read -r firstline<.vid-list.txt
 echo $firstline
 
 while read line; do
-	echo $line >> vid-list.txt
-	youtube-dl -w $line -o $firstline/'%(url)s.%(ext)s' &
+	echo $line
+	youtube-dl -w $line -o $firstline/'%(title)s-%(id)s.%(ext)s'&
 	for((i=0;i<9;i++));do
 		read -r line
-		echo $line >> vid-list.txt
-		youtube-dl -w $line -o $firstline/'%(url)s.%(ext)s' &
+		echo $line
+		youtube-dl -w $line -o $firstline/'%(title)s-%(id)s.%(ext)s'&
 	done
 	wait
-done < .page_link.txt
+done < .vid-list.txt
 
 	wait	
 	echo "ok"
